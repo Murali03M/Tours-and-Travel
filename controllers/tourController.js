@@ -12,9 +12,19 @@ exports.checkBody = (req, res, next) => {
 
 exports.getAllTours = async (req, res) => {
 
-   
+    
 
-    try { const tour = await Tour.find({})
+    try {
+        
+//         const queryObj = { ...req.query };
+
+//     const excludedFields = ['page', 'sort', 'limit', 'fields'];
+
+
+//     excludedFields.forEach(el => delete queryObj[el]);
+
+//    const tours = await Tour.find(queryObj);
+        const tour = await Tour.find({})
 
     res.status(200).json({
         status:'success',
