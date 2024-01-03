@@ -15,19 +15,48 @@ exports.getAllTours = async (req, res) => {
     
 
     try {
+
+        // filtering
         
-//         const queryObj = { ...req.query };
+       const queryObj = { ...req.query };
+       const excludedFields = ['page', 'sort', 'limit', 'fields'];
+      excludedFields.forEach(el => delete queryObj[el]);
 
-//     const excludedFields = ['page', 'sort', 'limit', 'fields'];
+        // advance filtering 
 
+        let queryStr = JSON.stringify(queryObj);
+        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
 
-//     excludedFields.forEach(el => delete queryObj[el]);
+        let query =Tour.find(JSON.parse(queryStr));
+        console.log(req.query);
+        console.log('before sort', query.length);
+        // sorting 
+        if (req.query.sort) {
+            const sortFields =req.query.sort.split(',').join(' ');
+            query = query.sort(sortFields);
+        }
+        console.log('after', query.length);
+        
+        //field limiting
 
-//    const tours = await Tour.find(queryObj);
-        const tour = await Tour.find({})
+        if (req.query.fields)
+        {
+            const fields = req.query.fields.split(',').join(' ');
+            query = query.select(fields);
+        } else {
+            query = query.select('-__v');
+        }
+
+        //pagination
+
+        
+        
+        //execute the query
+        const tour = await query;
 
     res.status(200).json({
-        status:'success',
+        status: 'success',
+        length: tour.length,
         data: tour
     });
         
